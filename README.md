@@ -61,6 +61,8 @@ sudo tail -f /var/log/nginx/*.log
 ---------------------------------------------------------------------------------
 # Run It with Docker 
 
+## Run the container with volumes :
+You can run the Nginx container with a volume mount to use your custom configuration without rebuilding the image:
 ```bash
 docker run -d \
   --name nginx-proxy \
@@ -70,6 +72,11 @@ docker run -d \
   -v ~/nginx-config/html:/var/www/html:ro \
   nginx:latest
 ```
+
+## Use the Docker file for having custom image :
+Needs rebuilding the image each time and it's not recommended.
+
+## Use the Docker Compose.
 
  --------------------------------------------------------------------------------
 
