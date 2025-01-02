@@ -78,6 +78,32 @@ Needs rebuilding the image each time and it's not recommended.
 
 ## Use the Docker Compose.
 
+Run the container:
+
+```bash
+docker-compose up -d
+```
+
+Check that the container is running:
+```bash
+docker ps
+```
+
+Test the configuration inside the container:
+```bash
+docker exec -it nginx-proxy nginx -t
+```
+
+Access the Nginx logs for debugging:
+```bash
+docker logs nginx-proxy
+```
+
+If you make changes to your Nginx configuration, reload it without restarting the container:
+```bash
+docker exec -it nginx-proxy nginx -s reload
+```
+
  --------------------------------------------------------------------------------
 
 ### Load Balancing Methods :
