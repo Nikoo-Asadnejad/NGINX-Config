@@ -1,0 +1,25 @@
+services:
+  nginx:
+    image: nginx:latest
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+      update_config:
+        parallelism: 1
+        delay: 10s
+      placement:
+        constraints:
+          - node.role == manager
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx-config/load-balanced-reverse-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx-config/ssl:/etc/ssl:ro
+      - ./nginx-config/html:/var/www/html:ro
+    environment:
+      - NGINX_HOST=example.com
+      - NGINX_PORT=443
+    networks:
+      - proxy-network
