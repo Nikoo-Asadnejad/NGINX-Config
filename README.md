@@ -58,6 +58,19 @@ sudo systemctl status nginx
 sudo tail -f /var/log/nginx/*.log
 ```
 
+---------------------------------------------------------------------------------
+# Run It with Docker 
+
+```bash
+docker run -d \
+  --name nginx-proxy \
+  -p 80:80 -p 443:443 \
+  -v ~/nginx-config/load-balanced-reverse-proxy.conf:/etc/nginx/conf.d/default.conf:ro \
+  -v ~/nginx-config/ssl:/etc/ssl:ro \
+  -v ~/nginx-config/html:/var/www/html:ro \
+  nginx:latest
+```
+
  --------------------------------------------------------------------------------
 
 ### Load Balancing Methods :
