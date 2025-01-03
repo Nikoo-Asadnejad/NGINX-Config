@@ -26,9 +26,10 @@ This project provides a comprehensive configuration for Nginx as a reverse proxy
 1. **Nginx Installed**:
    ```bash
    sudo apt update
-   sudo apt install nginx
+   sudo apt install nginx -y
+   sudo systemctl start nginx
+   sudo systemctl enable nginx
 
-   
 ## Installation:
 
 ### Edit Nginx Configuration  : 
