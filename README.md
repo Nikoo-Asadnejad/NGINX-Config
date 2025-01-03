@@ -43,10 +43,11 @@ sudo nano /etc/nginx/sites-available/load-balanced-reverse-proxy
 sudo ln -s /etc/nginx/sites-available/load-balanced-reverse-proxy /etc/nginx/sites-enabled/
 ```
 
-### Test and Restart Nginx : 
+### Test and Restart or Reload Nginx : 
 ```bash
 sudo nginx -t
 sudo systemctl restart nginx
+sudo systemctl reload nginx
 ```
 
 ### Check Nginx Status :
