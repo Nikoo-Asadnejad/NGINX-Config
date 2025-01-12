@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: proxy-namespace
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: proxy-namespace
+data:
+  load-balanced-reverse-proxy.conf: |
+    # Place the content of load-balanced-reverse-proxy.conf here
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-ssl-html
+  namespace: proxy-namespace
+data:
+  # Add SSL certificates and HTML files as ConfigMap entries
+  ssl-cert.pem: |
+    # Your SSL certificate content
+  index.html: |
+    <html><body><h1>Hello, Kubernetes!</h1></body></html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+  namespace: proxy-namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      nodeSelector:
+        kubernetes.io/role: manager
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          env:
+            - name: NGINX_HOST
+              value: "example.com"
+            - name: NGINX_PORT
+              value: "443"
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+            - name: ssl-files
+              mountPath: /etc/ssl
+              readOnly: true
+            - name: html-files
+              mountPath: /var/www/html
+              readOnly: true
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 10
+      strategy:
+        rollingUpdate:
+          maxUnavailable: 1
+        type: RollingUpdate
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: ssl-files
+          configMap:
+            name: nginx-ssl-html
+        - name: html-files
+          configMap:
+            name: nginx-ssl-html
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: proxy-namespace
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+    - protocol: TCP
+      port: 443
+      targetPort: 443
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: proxy-network
+  namespace: proxy-namespace
+spec:
+  podSelector:
+    matchLabels:
+      app: nginx
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
